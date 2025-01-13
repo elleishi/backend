@@ -1,38 +1,34 @@
-const express = require('express');
 const nodemailer = require('nodemailer');
 
-const app = express();
-app.use(express.json()); // For parsing JSON requests
+// Export a function that handles the request and response
+module.exports = async (req, res) => {
+    if (req.method === 'POST') {
+        const { to, subject, text } = req.body;
 
-// Create a POST route to send emails
-app.post('/send-email', async (req, res) => {
-    const { to, subject, text } = req.body;
+        try {
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'vehiqrspot@gmail.com',  
+                    pass: 'mlhaoacxxokjkruy',  
+                },
+            });
 
-    try {
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: 'vehiqrspot@gmail.com',
-                pass: 'mlhaoacxxokjkruy', 
-            },
-        });
+            const mailOptions = {
+                from: process.env.GMAIL_USER,
+                to,
+                subject,
+                text,
+            };
 
-        const mailOptions = {
-            from: 'vehiqrspot@gmail.com',
-            to,
-            subject,
-            text,
-        };
-
-        await transporter.sendMail(mailOptions);
-        res.status(200).json({ message: 'Email sent successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Failed to send email', error });
+            await transporter.sendMail(mailOptions);
+            res.status(200).json({ message: 'Email sent successfully' });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Failed to send email', error });
+        }
+    } else {
+        // Handle unsupported methods
+        res.status(405).json({ message: 'Method Not Allowed' });
     }
-});
-
-// Start the server
-app.listen(3000, () => {
-    console.log('Server running on http://localhost:3000');
-});
+};
