@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).send({ message: 'Only POST requests allowed. on test' });
+    return res.status(405).send({ message: 'Only POST requests allowed. on test 1' });
   }
 
   const { to, subject, text, isRegistration, userEmail, userName, password, link } = req.body;
